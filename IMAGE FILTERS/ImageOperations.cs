@@ -16,47 +16,76 @@ namespace IMAGE_FILTERS
         /// <returns>2D array of gray values</returns>
         public static byte[,] OpenImage(string ImagePath)
         {
+            // gets Image path and create the bitmap file of the chosen image with the px header and body of the image 
+            /*
             Bitmap original_bm = new Bitmap(ImagePath);
+            */
+            Bitmap original_bm = (Bitmap)Image.FromFile(ImagePath);
+
+            // get height and Width of image
             int Height = original_bm.Height;
             int Width = original_bm.Width;
 
+            // Contains image (Bitmap) while working on it.
             byte[,] Buffer = new byte[Height, Width];
 
+
+            // unsfe keyword used to use the pointer variable (whose value is the address of another variable)
             unsafe
             {
-                BitmapData bmd = original_bm.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.ReadWrite, original_bm.PixelFormat);
+                Rectangle rec = new Rectangle(0, 0, Width, Height);
+
+                BitmapData bmd = original_bm.LockBits(rec,ImageLockMode.ReadWrite, original_bm.PixelFormat);
                 int x, y;
                 int nWidth = 0;
                 bool Format32 = false;
                 bool Format24 = false;
                 bool Format8 = false;
 
+                // check if the pixel format of the image is (24bit/32bit/8bit...) ,
+
+                // if true (width*3) to convert 24bit to 3 bytes. {bit=0.125 byte}
                 if (original_bm.PixelFormat == PixelFormat.Format24bppRgb)
                 {
                     Format24 = true;
+
                     nWidth = Width * 3;
                 }
+
+                // if true (width*3) to convert 32 bit to 4 bytes.
                 else if (original_bm.PixelFormat == PixelFormat.Format32bppArgb || original_bm.PixelFormat == PixelFormat.Format32bppRgb || original_bm.PixelFormat == PixelFormat.Format32bppPArgb)
                 {
                     Format32 = true;
                     nWidth = Width * 4;
                 }
+
+                // if true (width*3) to convert 8 bit to 1 bytes.
                 else if (original_bm.PixelFormat == PixelFormat.Format8bppIndexed)
                 {
                     Format8 = true;
                     nWidth = Width;
                 }
+
+                // The stride is the width of a single row of pixels (a scan line).
+                // offset values work when you enlarge an image. When you resize an image, the graphics method examines the pixels in the result image.
                 int nOffset = bmd.Stride - nWidth;
+
+                // declare pointer P of type byte , whose value is the address of the fisrt pixel in the image
+                // Get the address of the first line.
                 byte* p = (byte*)bmd.Scan0;
+
                 for (y = 0; y < Height; y++)
                 {
                     for (x = 0; x < Width; x++)
                     {
+                        // if the bitmap data of the image is of format 8 bits (1 bit= 1 byte):
                         if (Format8)
                         {
                             Buffer[y, x] = p[0];
                             p++;
                         }
+
+                        // else if the bitmap data of the image is of format 24/32 bits:
                         else
                         {
                             Buffer[y, x] = (byte)((int)(p[0] + p[1] + p[2]) / 3);
@@ -66,6 +95,9 @@ namespace IMAGE_FILTERS
                     }
                     p += nOffset;
                 }
+
+                // LockBits method to lock an existing bitmap in system memory so that it can be changed programmatically
+
                 original_bm.UnlockBits(bmd);
             }
 
@@ -475,7 +507,6 @@ namespace IMAGE_FILTERS
                         ImageMatrix2[y, x] = Filter2(ImageMatrix, x, y, 3, Max_Size, Sort);
                 }
             }
-
             return ImageMatrix2;
         }
     }
