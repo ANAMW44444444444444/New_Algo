@@ -114,6 +114,10 @@ namespace IMAGE_FILTERS
             label3.Text = (Time).ToString();
             label3.Text += " s";
         }
-        
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

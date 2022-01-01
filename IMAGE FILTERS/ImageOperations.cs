@@ -14,6 +14,7 @@ namespace IMAGE_FILTERS
         /// </summary>
         /// <param name="ImagePath">Image file path</param>
         /// <returns>2D array of gray values</returns>
+
         public static byte[,] OpenImage(string ImagePath)
         {
             // gets Image path and create the bitmap file of the chosen image with the px header and body of the image 
@@ -53,6 +54,8 @@ namespace IMAGE_FILTERS
                 }
 
                 // if true (width*3) to convert 32 bit to 4 bytes.
+
+                //********
                 else if (original_bm.PixelFormat == PixelFormat.Format32bppArgb || original_bm.PixelFormat == PixelFormat.Format32bppRgb || original_bm.PixelFormat == PixelFormat.Format32bppPArgb)
                 {
                     Format32 = true;
@@ -68,7 +71,10 @@ namespace IMAGE_FILTERS
 
                 // The stride is the width of a single row of pixels (a scan line).
                 // offset values work when you enlarge an image. When you resize an image, the graphics method examines the pixels in the result image.
+                
+                //***************
                 int nOffset = bmd.Stride - nWidth;
+
 
                 // declare pointer P of type byte , whose value is the address of the fisrt pixel in the image
                 // Get the address of the first line.
@@ -88,7 +94,9 @@ namespace IMAGE_FILTERS
                         // else if the bitmap data of the image is of format 24/32 bits:
                         else
                         {
+                            // *************************
                             Buffer[y, x] = (byte)((int)(p[0] + p[1] + p[2]) / 3);
+
                             if (Format24) p += 3;
                             else if (Format32) p += 4;
                         }
@@ -96,29 +104,40 @@ namespace IMAGE_FILTERS
                     p += nOffset;
                 }
 
-                // LockBits method to lock an existing bitmap in system memory so that it can be changed programmatically
 
+                // LockBits method to lock an existing bitmap in system memory so that it can be changed programmatically
                 original_bm.UnlockBits(bmd);
             }
 
+            // return the buffer containing the image bitmapdata
             return Buffer;
         }
+
 
         /// <summary>
         /// Get the height of the image 
         /// </summary>
         /// <param name="ImageMatrix">2D array that contains the image</param>
         /// <returns>Image Height</returns>
+
+
+        // define a multi-dimensional array (ImageMatrix) containign te image  
+
+
+        // returns number of elements in the row direction of 2d array (ImageMatrix)
         public static int GetHeight(byte[,] ImageMatrix)
         {
             return ImageMatrix.GetLength(0);
         }
+
 
         /// <summary>
         /// Get the width of the image 
         /// </summary>
         /// <param name="ImageMatrix">2D array that contains the image</param>
         /// <returns>Image Width</returns>
+
+        // returns number of elements in the column direction oof 2d array (ImageMatrix)
         public static int GetWidth(byte[,] ImageMatrix)
         {
             return ImageMatrix.GetLength(1);
@@ -129,15 +148,21 @@ namespace IMAGE_FILTERS
         /// </summary>
         /// <param name="ImageMatrix">2D array that contains the image</param>
         /// <param name="PicBox">PictureBox object to display the image on it</param>
+        
+
+        // create display image function that takes the 2d array of the image + the picturebox
         public static void DisplayImage(byte[,] ImageMatrix, PictureBox PicBox)
         {
             // Create Image:
-            //==============
             int Height = ImageMatrix.GetLength(0);
             int Width = ImageMatrix.GetLength(1);
 
+
+            // create new bitmap data object contains: Data of Pixels {Wdith, Height, PixelFormat} 
             Bitmap ImageBMP = new Bitmap(Width, Height, PixelFormat.Format24bppRgb);
 
+
+            // unsfe keyword used to use the pointer variable (whose value is the address of another variable)
             unsafe
             {
                 BitmapData bmd = ImageBMP.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.ReadWrite, ImageBMP.PixelFormat);
@@ -145,7 +170,9 @@ namespace IMAGE_FILTERS
                 nWidth = Width * 3;
                 int nOffset = bmd.Stride - nWidth;
                 byte* p = (byte*)bmd.Scan0;
+
                 for (int i = 0; i < Height; i++)
+
                 {
                     for (int j = 0; j < Width; j++)
                     {
@@ -159,6 +186,8 @@ namespace IMAGE_FILTERS
             }
             PicBox.Image = ImageBMP;
         }
+
+
 
         ////1-INSERTION_SORT
         public static byte[] INSERTION_SORT(byte[] Array, int ArrayLength)
@@ -264,6 +293,8 @@ namespace IMAGE_FILTERS
             }
             return Array;
         }
+
+
         ////6-QUICK_SORT
         public static int PARTITION(byte[] Array, int p, int r)
         {
@@ -284,6 +315,10 @@ namespace IMAGE_FILTERS
             Array[r] = Temp;
             return i;
         }
+
+
+
+
         public static byte[] QUICK_SORT(byte[] Array, int p, int r)
         {
             if (p < r)
@@ -294,6 +329,7 @@ namespace IMAGE_FILTERS
             }
             return Array;
         }
+
         ////7-COUNTING_SORT (XXXXX)
         public static byte[] COUNTING_SORT(byte[] Array, int ArrayLength, byte Max, byte Min)
         {
@@ -313,6 +349,7 @@ namespace IMAGE_FILTERS
             }
             return Array;
         }
+
         ////8-HEAP_SORT
         public static int LEFT(int i)
         {
@@ -365,19 +402,27 @@ namespace IMAGE_FILTERS
         {
             byte[] Array;
             int[] Dx, Dy;
+
+            //****************
             if (Wmax % 2 != 0)
             {
                 Array = new byte[Wmax * Wmax];
                 Dx = new int[Wmax * Wmax];
                 Dy = new int[Wmax * Wmax];
             }
+
             else
             {
                 Array = new byte[(Wmax + 1) * (Wmax + 1)];
                 Dx = new int[(Wmax + 1) * (Wmax + 1)];
                 Dy = new int[(Wmax + 1) * (Wmax + 1)];
             }
+
+
             int Index = 0;
+
+
+            //**************
             for (int _y = -(Wmax / 2); _y <= (Wmax / 2); _y++)
             {
                 for (int _x = -(Wmax / 2); _x <= (Wmax / 2); _x++)
@@ -387,6 +432,9 @@ namespace IMAGE_FILTERS
                     Index++;
                 }
             }
+
+
+
             byte Max, Min, Z;
             int ArrayLength, Sum, NewY, NewX, Avg;
             Sum = 0;
